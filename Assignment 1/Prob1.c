@@ -9,7 +9,7 @@ int main(void)
 {
 
 	pid_t p1,p2;
-	int pipedes[3][2];
+	int pipedes[3][2];   //Each row of this array represents a pipe
 	char sen[BUFSIZE], rcv[BUFSIZE];
 	int i,j;
 	for (i=0;i<3;i++)
@@ -24,7 +24,7 @@ int main(void)
 
 	p1 = fork();
 	
-	if (p1)
+	if (p1)	//Parent process serves as P3
 	{
 		close(pipedes[0][0]);
 		close(pipedes[0][1]);
@@ -38,7 +38,7 @@ int main(void)
 		i = 0;
 		while(rcv[i++]);
 	
-		for(j=0;j<i;j++)
+		for(j=0;j<i;j++)	
 		{
 			if ( rcv[j]>='a'&&rcv[j]<='z')
 				sen[j] = rcv[j]-32;
@@ -55,10 +55,10 @@ int main(void)
 		printf("I am process P3\nMy pid is %d\nI'm about to die\n", getpid());
 		exit(0);
 	}
-	else
+	else	
 	{
 		p2 = fork();
-		if (p2)
+		if (p2)		//The child process serves as P2
 		{
 			close(pipedes[0][1]);
 			close(pipedes[1][0]);
@@ -85,7 +85,7 @@ int main(void)
 			printf("I am process P2\nMy pid is %d\nI'm about to die\n", getpid());
 			exit(0);
 		}
-		else 
+		else	//Grandchild process serves as P1, because it should be firstly terminated 
 		{
 			close(pipedes[0][0]);
 			close(pipedes[1][0]);
