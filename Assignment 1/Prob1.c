@@ -1,3 +1,6 @@
+
+//Prob1
+
 #define BUFSIZE 128
 #include<stdio.h>
 #include<stdlib.h>
@@ -38,6 +41,7 @@ int main(void)
 		i = 0;
 		while(rcv[i++]);
 	
+		//Capital letters
 		for(j=0;j<i;j++)	
 		{
 			if ( rcv[j]>='a'&&rcv[j]<='z')
@@ -45,14 +49,16 @@ int main(void)
 			else
 				sen[j] = rcv[j];
 		}
-		printf("I am process P3\nMy pid is %d\nI just received the string %s\nI am sending %s to P1\n", getpid(), rcv, sen);
+
+
+		printf("I am process P3\nMy pid is %d\nI just received the string %s\nI am sending %s to P1\n\n", getpid(), rcv, sen);
 		if ((write(pipedes[2][1], sen, BUFSIZE))==-1)
 		{
 			perror("write call");
 			exit(2);
 		}
 		wait(NULL);	
-		printf("I am process P3\nMy pid is %d\nI'm about to die\n", getpid());
+		printf("I am process P3\nMy pid is %d\nI'm about to die\n\n", getpid());
 		exit(0);
 	}
 	else	
@@ -73,16 +79,19 @@ int main(void)
 			while(rcv[i++]);
 			i--;
 			sen[i]=rcv[i];
+
+			//reverse the string
 			for(j=0;j<i;j++)
 				sen[j] = rcv[i-1-j];
-			printf("I am process P2\nMy pid is %d\nI just received the string %s\nI am sending %s to P3\n", getpid(), rcv, sen);
+			
+			printf("I am process P2\nMy pid is %d\nI just received the string %s\nI am sending %s to P3\n\n", getpid(), rcv, sen);
 			if ((write(pipedes[1][1], sen, BUFSIZE))==-1)
 			{
 				perror("write call");
 				exit(2);
 			}
 			wait(NULL);
-			printf("I am process P2\nMy pid is %d\nI'm about to die\n", getpid());
+			printf("I am process P2\nMy pid is %d\nI'm about to die\n\n", getpid());
 			exit(0);
 		}
 		else	//Grandchild process serves as P1, because it should be firstly terminated 
@@ -93,6 +102,7 @@ int main(void)
 			close(pipedes[2][1]);
 			printf("I am process P1\nMy pid is %d\nPlease enter a string: ", getpid());
 			scanf("%s", sen);
+			printf("\n");
 			if ((write(pipedes[0][1], sen, BUFSIZE))==-1)
 			{
 				perror("write call");
@@ -104,9 +114,9 @@ int main(void)
 				exit(3);
 			}
 			
-			printf("I am process P1\nMy pid is %d\nI just received the string %s\n", getpid(), rcv);
+			printf("I am process P1\nMy pid is %d\nI just received the string %s\n\n", getpid(), rcv);
 
-			printf("I am process P1\nMy pid is %d\nI'm about to die\n", getpid());
+			printf("I am process P1\nMy pid is %d\nI'm about to die\n\n", getpid());
 			exit(0);
 		}
 	}

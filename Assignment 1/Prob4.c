@@ -1,3 +1,5 @@
+//Prob4
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
@@ -11,14 +13,14 @@ void process_tree(int n)
 	pid_t pid[2];		//Saving the pids of the process's 2 children
 	int index[n];		//Saving the index
 	index[0] = 1;		//Saving the process number
-	printf("I'm the p1; my pid is %d;\n My ppid is %d\n",getpid(),getppid());
+	printf("I'm the p1; my pid is %d;\n My ppid is %d\n\n",getpid(),getppid());
 	for(i=1;i<n;i++)
 	{
 		pid[0] = fork();	
 		if(!pid[0])		//the even child of the process
 		{
 			index[i] = index[i-1]*2; 
-			printf("I'm the p%d; my pid is %d;\n My ppid is %d\n",index[i],getpid(),getppid());
+			printf("I'm the p%d; my pid is %d;\n My ppid is %d\n\n",index[i],getpid(),getppid());
 		}
 		else			//parent process
 		{
@@ -27,7 +29,7 @@ void process_tree(int n)
 			if(!pid[1])		//the odd child of the process
 			{
 				index[i] = index[i-1]*2+1;
-				printf("I'm the p%d; my pid is %d;\n My ppid is %d\n",index[i],getpid(),getppid());
+				printf("I'm the p%d; my pid is %d;\n My ppid is %d\n\n",index[i],getpid(),getppid());
 			}
 			else			//that's only for parent process
 			{
