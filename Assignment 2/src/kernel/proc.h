@@ -43,6 +43,7 @@ struct proc {
   sigset_t p_pending;		/* bit map for pending kernel signals */
 
   char p_name[P_NAME_LEN];	/* name of the process, including \0 */
+
 };
 
 /* Bits for the runtime flags. A process is runnable iff p_rts_flags == 0. */
@@ -91,6 +92,7 @@ struct proc {
  * pproc_addr array, while accessing an element i requires a multiplication
  * with sizeof(struct proc) to determine the address. 
  */
+EXTERN int proc_mes[NR_TASKS + NR_PROCS][NR_TASKS + NR_PROCS];		/*record messages delivered between processes*/
 EXTERN struct proc proc[NR_TASKS + NR_PROCS];	/* process table */
 EXTERN struct proc *pproc_addr[NR_TASKS + NR_PROCS];
 EXTERN struct proc *rdy_head[NR_SCHED_QUEUES]; /* ptrs to ready list headers */
