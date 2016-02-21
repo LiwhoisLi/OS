@@ -513,15 +513,6 @@ int *front;					/* return: front or back */
       prev_ptr = rp;				/* store ptr for next */
   }
 
-  /* Check start times. If this process started later than the process
-   * at the head of the next-higher queue, decrement penalty.
-   */
-  if( ! iskernelp(rp))
-      if( rp->p_start_time >
-              rdy_head[rp->p_priority + penalty - 1]->p_start_time )
-          penalty --;
-
-
   /* Determine the new priority of this process. The bounds are determined
    * by IDLE's queue and the maximum priority of this process. Kernel task 
    * and the idle process are never changed in priority.

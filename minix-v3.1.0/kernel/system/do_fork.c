@@ -50,7 +50,6 @@ register message *m_ptr;	/* pointer to request message */
   rpc->p_reg.retreg = 0;	/* child sees pid = 0 to know it is child */
   rpc->p_user_time = 0;		/* set all the accounting times to 0 */
   rpc->p_sys_time = 0;
-  rpc->p_start_time = get_uptime();
 
   /* Parent and child have to share the quantum that the forked process had,
    * so that queued processes do not have to wait longer because of the fork.
