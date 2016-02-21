@@ -39,6 +39,7 @@ struct proc {
 
   clock_t p_user_time;		/* user time in ticks */
   clock_t p_sys_time;		/* sys time in ticks */
+  clock_t p_start_time;
 
   struct proc *p_nextready;	/* pointer to next ready process */
   struct proc *p_caller_q;	/* head of list of procs wishing to send */
