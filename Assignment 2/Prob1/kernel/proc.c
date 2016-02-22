@@ -211,7 +211,7 @@ unsigned flags;				/* system call flags */
   }
 	
 	/*Update the value in process message vector*/
-	proc_mes[NR_TASKS+callerptr->p_nr][NR_TASKS+dst]++;
+	proc_mes[NR_TASKS+caller_ptr->p_nr][NR_TASKS+dst]++;
 
   /* Check if 'dst' is blocked waiting for this message. The destination's 
    * SENDING flag may be set when its SENDREC call blocked while sending.  
@@ -329,7 +329,7 @@ int dst;				/* which process to notify */
   message m;				/* the notification message */
 
 	/*Update the value in process message vector*/
-	proc_mes[NR_TASKS+callerptr->p_nr][NR_TASKS+dst]++;
+	proc_mes[NR_TASKS+caller_ptr->p_nr][NR_TASKS+dst]++;
 
   /* Check to see if target is blocked waiting for this message. A process 
    * can be both sending and receiving during a SENDREC system call.
