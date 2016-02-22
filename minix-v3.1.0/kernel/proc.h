@@ -39,7 +39,6 @@ struct proc {
 
   clock_t p_user_time;		/* user time in ticks */
   clock_t p_sys_time;		/* sys time in ticks */
-  clock_t p_start_time;
 
   struct proc *p_nextready;	/* pointer to next ready process */
   struct proc *p_caller_q;	/* head of list of procs wishing to send */
@@ -51,6 +50,8 @@ struct proc {
   sigset_t p_pending;		/* bit map for pending kernel signals */
 
   char p_name[P_NAME_LEN];	/* name of the process, including \0 */
+
+  clock_t p_start_time;     /* time started in ticks */
 
 #if DEBUG_SCHED_CHECK
   int p_ready, p_found;
