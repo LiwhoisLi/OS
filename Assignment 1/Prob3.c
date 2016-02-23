@@ -1,3 +1,4 @@
+//Prob 3
 
 #define MAXLEN  256
 #include<stdlib.h>
@@ -59,14 +60,23 @@ int strcomp(char *a, char *b)
 
 void traverse(char* dname, char* filename)
 {
-	Qpointer head,tail;
+	if( strcomp(dname,filename))
+	{
+		printf("Don't play joke on me. Input another filename\n");
+		return;
+	}
+
+	//initialize queue
+	Qpointer head,tail;							
 	head = (Qpointer)malloc(sizeof(Qnode));
 	tail = (Qpointer)malloc(sizeof(Qnode));
 	head->p = tail;
 	tail->p = head;
+	
+	
 	DIR *dp;
 	Dirp d;
-	char tempdir[MAXLEN],dir[MAXLEN];
+	char tempdir[MAXLEN],basedir[MAXLEN];
 	int i=0,j;
 	if((dp = opendir(dname)) == NULL)
 	{
@@ -74,49 +84,52 @@ void traverse(char* dname, char* filename)
 		exit(1);
 	}
 	printf("/\n");
-	dir[0] = '\0';
-	tempdir[0] = '\0';
+	basedir[0] = '\0';		//Maintain a basedir to print the current path
+	tempdir[0] = '\0';		//Maintain a tempdir to interact with queue
 
 
-	chdir(dname);	
+	chdir(dname);			//In next procedures, we use relative paths
 	
 	while(1)
 	{
 		if (tempdir[0])
 				tempdir[i++] = '/';
-		while(d = readdir(dp))
-		{
 
-			if( d->d_ino && (d->d_name[0] !='.'))
+		//Traverse the opened directory, and update the path and the queue
+		//Paths are printed as basepath+varpath+d_name
+		while(d = readdir(dp))					
+		{
+			if( d->d_ino && (d->d_name[0] !='.'))		//Ignore the unlinked or hidden files
 			{
-				if (dir[0]) 		printf("/%s",dir);
+				if (basedir[0]) 		printf("/%s",basedir);	
 
 				printf("/%s",d->d_name);
 
-				if (strcomp(filename,d->d_name))
+				if (strcomp(filename,d->d_name))		//find the match	
 				{
 					printf(" is found!\n");
 					return;
 				}
 				printf("\n");
 				
-				for(j=0;d->d_name[j];j++)
-					tempdir[j+i] = d->d_name[j];
+				for(j=0;d->d_name[j];j++)	tempdir[j+i] = d->d_name[j];
 				tempdir[j+i] = '\0';
 				enqueue(head,tempdir);
 			}
 		}
-		closedir(dp);
+		closedir(dp);				//in case it is run out
 		
 		if(isqempty(head,tail)) 
 		{
 			printf("%s cannot be found\n",filename);
-			return;
+			return;					
 		}
 		pop(tail,tempdir);
+
+		//open the new directory in the frotier, and handle different types of conditions
 		while((dp = opendir(tempdir)) == NULL)
 		{
-			if (errno!=20)
+			if (errno!=20)	//Exclude that dp actually points on a file
 			{
 				printf("%s\n",tempdir);
 				perror("error");
@@ -128,11 +141,12 @@ void traverse(char* dname, char* filename)
 				return;
 			}
 			pop(tail,tempdir);	
-					
 		}
+
+		//When there are unexplored directories, basedir takes over the path for the next search 
 		for(i=0;tempdir[i];i++)
-	 		dir[i] = tempdir[i];
-		dir[i] = '\0';
+	 		basedir[i] = tempdir[i];
+		basedir[i] = '\0';
 	}
 }
 

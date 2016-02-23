@@ -1,4 +1,7 @@
 #include<unistd.h>
+//Prob2
+
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<sys/types.h>
@@ -9,7 +12,7 @@ int count,i=0;
 void print(int n)
 {
 	printf("Count is %d,my pid is %d\n",count,getpid());
-	i=1;
+	i=1;		//Using a flag rather than directly setting count to 0
 	return;
 }
 
@@ -30,12 +33,10 @@ int main(void)
 			for ( count=0; count<5; count++)
 			{
 				sleep(1);
-				//printf("hh\n");
 				kill(pid, SIGALRM);
 				kill(pid1,SIGALRM);
-				//printf("hello\n");
 			}
-			sleep(1);
+			sleep(1);			//Dealing with the problem in Minix that signal cannot be handled instantly
 			kill(pid, SIGSTOP);
 			kill(pid1,SIGSTOP);
 		}
@@ -47,6 +48,5 @@ int main(void)
 				count = 0;
 				i = 0;
 			}
-
 	return 1;
 }
