@@ -16,8 +16,15 @@
  
 struct proc {
   struct stackframe_s p_reg;	/* process' registers saved in stack frame */
+
+#if (CHIP == INTEL)
   reg_t p_ldt_sel;		/* selector in gdt with ldt base and limit */
   struct segdesc_s p_ldt[2+NR_REMOTE_SEGS]; /* CS, DS and remote segments */
+#endif 
+
+#if (CHIP == M68000)
+/* M68000 specific registers and FPU details go here. */
+#endif 
 
   proc_nr_t p_nr;		/* number of this process (for fast access) */
   struct priv *p_priv;		/* system privileges structure */
@@ -44,6 +51,9 @@ struct proc {
 
   char p_name[P_NAME_LEN];	/* name of the process, including \0 */
 
+#if DEBUG_SCHED_CHECK
+  int p_ready, p_found;
+#endif
 };
 
 /* Bits for the runtime flags. A process is runnable iff p_rts_flags == 0. */
@@ -92,7 +102,7 @@ struct proc {
  * pproc_addr array, while accessing an element i requires a multiplication
  * with sizeof(struct proc) to determine the address. 
  */
-EXTERN int proc_mes[NR_TASKS + NR_PROCS][NR_TASKS + NR_PROCS];		/*record messages delivered between processes*/
+EXTERN int mess_table[NR_TASKS + NR_PROCS][NR_TASKS + NR_PROCS]; 
 EXTERN struct proc proc[NR_TASKS + NR_PROCS];	/* process table */
 EXTERN struct proc *pproc_addr[NR_TASKS + NR_PROCS];
 EXTERN struct proc *rdy_head[NR_SCHED_QUEUES]; /* ptrs to ready list headers */
