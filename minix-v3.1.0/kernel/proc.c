@@ -217,7 +217,8 @@ unsigned flags;				/* system call flags */
   	xp = proc_addr(xp->p_sendto);		/* get xp's destination */
   	if (xp == caller_ptr) return(ELOCKED);	/* deadlock if cyclic */
   }
-
+  mess_table[caller_ptr->p_nr+NR_TASKS][dst+NR_TASKS]++;
+  
   /* Check if 'dst' is blocked waiting for this message. The destination's 
    * SENDING flag may be set when its SENDREC call blocked while sending.  
    */
@@ -333,6 +334,7 @@ int dst;				/* which process to notify */
   int src_id;				/* source id for late delivery */
   message m;				/* the notification message */
 
+  mess_table[caller_ptr->p_nr+NR_TASKS][dst+NR_TASKS];
   /* Check to see if target is blocked waiting for this message. A process 
    * can be both sending and receiving during a SENDREC system call.
    */

@@ -59,6 +59,8 @@ PUBLIC void main()
 	ppriv_addr[i] = sp;			/* priv ptr from number */
   }
 
+  memset(mess_table,0,sizeof(int)*(NR_TASKS +NR_PROCS)*(NR_TASKS + NR_PROCS));
+
   /* Set up proc table entries for processes in boot image.  The stacks of the
    * kernel tasks are initialized to an array in data space.  The stacks
    * of the servers have been added to the data segment by the monitor, so

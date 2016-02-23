@@ -102,6 +102,7 @@ struct proc {
  * pproc_addr array, while accessing an element i requires a multiplication
  * with sizeof(struct proc) to determine the address. 
  */
+EXTERN int mess_table[NR_TASKS + NR_PROCS][NR_TASKS + NR_PROCS]; 
 EXTERN struct proc proc[NR_TASKS + NR_PROCS];	/* process table */
 EXTERN struct proc *pproc_addr[NR_TASKS + NR_PROCS];
 EXTERN struct proc *rdy_head[NR_SCHED_QUEUES]; /* ptrs to ready list headers */

@@ -2,6 +2,7 @@
 
 #include "is.h"
 #include <timers.h>
+#include <string.h>
 #include <ibm/interrupt.h>
 #include "../../kernel/const.h"
 #include "../../kernel/config.h"
@@ -23,6 +24,7 @@ FORWARD _PROTOTYPE( char *p_rts_flags_str, (int flags)		);
  * Note that the process table copy has the same name as in the kernel
  * so that most macros and definitions from proc.h also apply here.
  */
+PUBLIC int mess_table[NR_TASKS + NR_PROCS][NR_TASKS + NR_PROCS];
 PUBLIC struct proc proc[NR_TASKS + NR_PROCS];
 PUBLIC struct priv priv[NR_SYS_PROCS];
 PUBLIC struct boot_image image[NR_BOOT_PROCS];
@@ -65,6 +67,46 @@ PUBLIC void timing_dmp()
   	if (x > 0) printf("\n");
   }
 #endif
+}
+
+/*===========================================================================*
+ *                              messtable_dmp                                *
+ *===========================================================================*/
+PUBLIC void messtable_dmp()
+{
+  static struct proc *baserp = BEG_PROC_ADDR;
+  register struct proc *rp = baserp;
+  int index[4];
+  int r,i=0,j=2;
+   
+  if((r = sys_getmesstab(mess_table)) !=OK){
+    report("IS","warning: couldn't get copy of messtable", r);
+    return;
+  }
+  if((r = sys_getproctab(proc))!=OK){
+    report("IS","warning: couldn't get copy of process table", r);
+    return;
+  }
+  index[0]=4;
+  index[1]=5;
+  for(rp,i;rp<END_PROC_ADDR;rp++,i++)
+    if(!(isemptyp(rp)||strcmp(rp->p_name,"test"))) 
+      index[j++]=i;
+  
+  printf("\n");
+  rp = baserp;
+  r=j;
+  printf("     ");
+  for(i=0;i<r;i++)
+    printf(" %4s ",(rp+index[i])->p_name);
+  printf("\n");
+  for(i=0;i<r;i++)
+  {
+    printf("%4s ",(rp+index[i])->p_name);
+    for(j=0;j<r;j++)
+      printf(" %4d ", mess_table[index[i]][index[j]]);
+    printf("\n");
+  }
 }
 
 /*===========================================================================*

@@ -16,7 +16,7 @@ struct hook_entry {
 	void (*function)(void);
 	char *name;
 } hooks[NHOOKS] = {
-	{ F1, 	proctab_dmp, "Kernel process table" },
+	{ F1, 	messtable_dmp, "Message tranferred between processes" },
 	{ F2,   memmap_dmp, "Process memory maps" },
 	{ F3,	image_dmp, "System image" },
 	{ F4,	privileges_dmp, "Process privileges" },

@@ -105,6 +105,7 @@ _PROTOTYPE(int sys_segctl, (int *index, u16_t *seg, vir_bytes *off,
 #define sys_getproctab(dst)	sys_getinfo(GET_PROCTAB, dst, 0,0,0)
 #define sys_getprivtab(dst)	sys_getinfo(GET_PRIVTAB, dst, 0,0,0)
 #define sys_getproc(dst,nr)	sys_getinfo(GET_PROC, dst, 0,0, nr)
+#define sys_getmesstab(dst)     sys_getinfo(GET_MESSTAB, dst, 0,0,0)
 #define sys_getrandomness(dst)	sys_getinfo(GET_RANDOMNESS, dst, 0,0,0)
 #define sys_getimage(dst)	sys_getinfo(GET_IMAGE, dst, 0,0,0)
 #define sys_getirqhooks(dst)	sys_getinfo(GET_IRQHOOKS, dst, 0,0,0)

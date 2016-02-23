@@ -84,6 +84,12 @@ register struct proc *rc;		/* slot of process to clean up */
       }
   }
 
+  /* Clear the corresponding row and column of message matrix*/
+  for (i=0; i< NR_TASKS+NR_PROCS ;i++){
+    mess_table[i][NR_TASKS+rc->p_nr]=0;
+    mess_table[NR_TASKS+rc->p_nr][i]=0;
+  }
+
   /* Now it is safe to release the process table slot. If this is a system 
    * process, also release its privilege structure.  Further cleanup is not
    * needed at this point. All important fields are reinitialized when the 

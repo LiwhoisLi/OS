@@ -70,6 +70,11 @@ register message *m_ptr;	/* pointer to request message */
         src_phys = vir2phys(proc);
         break;
     }
+    case GET_MESSTAB: {
+        length = sizeof(int)* (NR_PROCS + NR_TASKS)*(NR_PROCS+NR_TASKS);
+        src_phys = vir2phys(mess_table);
+        break;
+    }
     case GET_PRIVTAB: {
         length = sizeof(struct priv) * (NR_SYS_PROCS);
         src_phys = vir2phys(priv);
