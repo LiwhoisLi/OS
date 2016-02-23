@@ -561,7 +561,7 @@ static int rl_probe(rep)
 re_t *rep;
 {
 	int i, r, devind, just_one;
-	u16_t cr, vid, did;
+	u16_t vid, did;
 	u32_t bar;
 	u8_t ilr;
 	char *dname;
@@ -631,13 +631,6 @@ re_t *rep;
 #endif
 	pci_reserve(devind);
 	/* printf("cr = 0x%x\n", pci_attr_r16(devind, PCI_CR)); */
-
-	/* enable bus mastering if necessary */
-	cr = pci_attr_r16(devind, PCI_CR);
-	printf("cr = 0x%x\n", cr);
-	if(!(cr & PCI_CR_MAST_EN))
-		pci_attr_w16(devind, PCI_CR, cr | PCI_CR_MAST_EN);
-
 	bar= pci_attr_r32(devind, PCI_BAR) & 0xffffffe0;
 	if ((bar & 0x3ff) >= 0x100-32 || bar < 0x400)
 	  panic("rtl_probe",
