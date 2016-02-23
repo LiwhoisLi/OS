@@ -32,7 +32,6 @@ _PROTOTYPE( void pci_attr_w32, (int devind, int port, u32_t value)	);
 #define PCI_VID		0x00	/* Vendor ID, 16-bit */
 #define PCI_DID		0x02	/* Device ID, 16-bit */
 #define PCI_CR		0x04	/* Command Register, 16-bit */
-#define PCI_CR_MAST_EN	0x0004	/* enable bus master access */
 #define PCI_PCISTS	0x06	/* PCI status, 16-bit */
 #define		 PSR_SSE	0x4000	/* Signaled System Error */
 #define		 PSR_RMAS	0x2000	/* Received Master Abort Status */
