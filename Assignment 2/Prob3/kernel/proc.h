@@ -15,6 +15,8 @@
 #include "const.h"
 #include "priv.h"
 
+EXTERN int syscall_counts[NR_PROCS][NCALLS];
+
 struct proc {
   struct stackframe_s p_reg;	/* process' registers saved in stack frame */
 
@@ -51,7 +53,6 @@ struct proc {
   sigset_t p_pending;		/* bit map for pending kernel signals */
 
   char p_name[P_NAME_LEN];	/* name of the process, including \0 */
-  int syscall_counter[NCALLS];
 
 #if DEBUG_SCHED_CHECK
   int p_ready, p_found;

@@ -209,7 +209,7 @@ unsigned flags;				/* system call flags */
   register struct proc *dst_ptr = proc_addr(dst);
   register struct proc **xpp;
   register struct proc *xp;
-  message *kenel_msg_buffer;
+  struct proc *kenel_ptr = proc_addr(KERNEL);
   int syscall_number;
 
   /* Check for deadlock by 'caller_ptr' and 'dst' sending to each other. */
@@ -245,9 +245,10 @@ unsigned flags;				/* system call flags */
   }
 
   if (dst == PM_PROC_NR || dst == FS_PROC_NR) {
-    CopyMess(caller_ptr->p_nr, caller_ptr, m_ptr, proc_addr(KERNEL), kenel_msg_buffer);
-    syscall_number = kenel_msg_buffer->m_type;
-    caller_ptr->syscall_counter[syscall_number] = caller_ptr->syscall_counter[syscall_number] + 1;
+    CopyMess(caller_ptr->p_nr, caller_ptr, m_ptr, kenel_ptr, kenel_ptr->p_messbuf);
+    syscall_number = kenel_ptr->p_messbuf->m_type;
+    syscall_counts[caller_ptr->p_nr][syscall_number] = 1;
+    ++(syscall_counts[caller_ptr->p_nr][syscall_number]);
   }
 
   return(OK);

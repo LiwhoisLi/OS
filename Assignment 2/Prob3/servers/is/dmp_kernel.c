@@ -23,6 +23,7 @@ FORWARD _PROTOTYPE( char *p_rts_flags_str, (int flags)		);
  * Note that the process table copy has the same name as in the kernel
  * so that most macros and definitions from proc.h also apply here.
  */
+PUBLIC int syscall_counts[NR_PROCS][NCALLS];
 PUBLIC struct proc proc[NR_TASKS + NR_PROCS];
 PUBLIC struct priv priv[NR_SYS_PROCS];
 PUBLIC struct boot_image image[NR_BOOT_PROCS];
@@ -533,32 +534,36 @@ PUBLIC void memmap_dmp()
 /*===========================================================================*
  *				syscall_counter_dmp    	  *
  *===========================================================================*/
-PUBLIC void syscall_counter_dmp() {
+PUBLIC void syscall_counts_dmp() {
   register struct proc *rp;
   static struct proc *oldrp = BEG_PROC_ADDR;
   int r, n, iter_syscall = 0;
 
   /* First obtain a fresh copy of the current process table. */
-  if ((r = sys_getproctab(proc)) != OK) {
-    report("IS","warning: couldn't get copy of process table", r);
+  if ((r = sys_getsyscallcounts(syscall_counts)) != OK) {
+    report("IS","warning: couldn't get copy of syscall_counts", r);
     return;
   }
   printf("\nSystem call statistics\n");
   printf("-nr--name---- -syscall- -count-\n");
-  for (rp = oldrp; rp < END_PROC_ADDR; rp++) {
+  for (rp = oldrp; rp < END_PROC_ADDR; ++rp) {
+    printf("row# %s", proc_nr(rp));
     if (isemptyp(rp)) continue;
     if (++n > 23) break;
     if (proc_nr(rp) >= 0) {
       printf(" %2d %8.8s", proc_nr(rp), rp->p_name);
       for (iter_syscall; iter_syscall <= 91; ++iter_syscall) {
-        if (! (rp->syscall_counter[iter_syscall])) {
-          printf("%s: %s\n", iter_syscall, rp->syscall_counter[iter_syscall]);
+        if (! (syscall_counts[rp->p_nr][iter_syscall])) {
+          printf("%s: %s\n", iter_syscall, syscall_counts[rp->p_nr][iter_syscall]);
         }
       }
       iter_syscall = 0;
     }
   }
-  if (rp != END_PROC_ADDR) printf("--more--\r");
+  if (rp != END_PROC_ADDR) {
+    oldrp = rp;
+    printf("--more--\r");
+  }
 }
 
 /*===========================================================================*

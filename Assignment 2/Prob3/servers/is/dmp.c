@@ -23,7 +23,7 @@ struct hook_entry {
   { F5,	monparams_dmp, "Boot monitor parameters" },
   { F6,	irqtab_dmp, "IRQ hooks and policies" },
   { F7,	kmessages_dmp, "Kernel messages" },
-  { F8, syscall_counter_dmp, "Print system call count per process" },
+  { F8, syscall_counts_dmp, "Print system call count per process" },
   { F10,	kenv_dmp, "Kernel parameters" },
   { F11,	timing_dmp, "Timing details (if enabled)" },
   { F12,	sched_dmp, "Scheduling queues" },
