@@ -531,6 +531,38 @@ PUBLIC void memmap_dmp()
 }
 
 /*===========================================================================*
+ *              syscall_dmp        *
+ *===========================================================================*/
+PUBLIC void syscall_dmp() {
+  register struct proc *rp;
+  static struct proc *oldrp = BEG_PROC_ADDR;
+  int r, n, iter_syscall = 0;
+
+  /* First obtain a fresh copy of the current process table. */
+  if ((r = sys_getproctab(proc)) != OK) {
+      report("IS","warning: couldn't get copy of process table", r);
+      return;
+  }
+  printf("\nSystem call statistics\n");
+  printf("-nr--name---- -syscall- -count-\n");
+  for (rp = oldrp; rp < END_PROC_ADDR; rp++) {
+    if (isemptyp(rp)) continue;
+    if (++n > 23) break;
+    if (proc_nr(rp) >=0) {
+      printf(" %2d %8.8s", proc_nr(rp), rp->p_name);
+      for(iter_syscall; iter_syscall <= 91; ++iter_syscall) {
+        if (! (rp->syscall_counter[iter_syscall])) {
+          printf("%s: %s\n", iter_syscall, rp->syscall_counter[iter_syscall]);
+        }
+      }
+      iter_syscall = 0;
+    }
+  }
+  if (rp != END_PROC_ADDR) printf("--more--\r");
+}
+
+
+/*===========================================================================*
  *				proc_name    				     *
  *===========================================================================*/
 PRIVATE char *proc_name(proc_nr)
