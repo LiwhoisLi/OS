@@ -486,6 +486,46 @@ PRIVATE char *p_rts_flags_str(int flags)
 }
 
 /*===========================================================================*
+ *				proctab_time_dmp    		     *
+ *===========================================================================*/
+#if (CHIP == INTEL)
+PUBLIC void proctab_time_dmp()
+{
+/* Proc table dump */
+
+  register struct proc *rp;
+  static struct proc *oldrp = BEG_PROC_ADDR;
+  int r, n = 0;
+  phys_clicks text, data, size;
+
+  /* First obtain a fresh copy of the current process table. */
+  if ((r = sys_getproctab(proc)) != OK) {
+      report("IS","warning: couldn't get copy of process table", r);
+      return;
+  }
+
+  printf("\n--nr-name---- -prior-quant- -user---sys- -start-\n");
+
+  for (rp = oldrp; rp < END_PROC_ADDR; rp++) {
+	if (isemptyp(rp)) continue;
+	if (++n > 23) break;
+	if (proc_nr(rp) == IDLE) 	printf("(%2d) ", proc_nr(rp));  
+	else if (proc_nr(rp) < 0) 	printf("[%2d] ", proc_nr(rp));
+	else 				printf(" %2d  ", proc_nr(rp));
+	printf(" %-8.8s %02u/%02u %02u/%02u %6lu%6lu %6lu",
+	       rp->p_name,
+	       rp->p_priority, rp->p_max_priority,
+	       rp->p_ticks_left, rp->p_quantum_size, 
+	       rp->p_user_time, rp->p_sys_time,
+	       rp->p_start_time);
+	printf("\n");
+  }
+  if (rp == END_PROC_ADDR) rp = BEG_PROC_ADDR; else printf("--more--\r");
+  oldrp = rp;
+}
+#endif
+
+/*===========================================================================*
  *				proctab_dmp    				     *
  *===========================================================================*/
 #if (CHIP == INTEL)

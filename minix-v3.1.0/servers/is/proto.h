@@ -9,6 +9,7 @@ _PROTOTYPE( void mapping_dmp, (void)	 				);
 
 /* dmp_kernel.c */
 _PROTOTYPE( void messtable_dmp, (void)					);
+_PROTOTYPE( void proctab_time_dmp, (void)				);
 _PROTOTYPE( void proctab_dmp, (void)					);
 _PROTOTYPE( void memmap_dmp, (void)					);
 _PROTOTYPE( void privileges_dmp, (void)					);

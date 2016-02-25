@@ -545,6 +545,7 @@ PRIVATE void pick_proc()
  * clock task can tell who to bill for system time.
  */
   register struct proc *rp;			/* process to run */
+  register struct proc *xp;			/* pointer for iteration */
   int q;					/* iterate over queues */
 
   /* Check each of the scheduling queues for ready processes. The number of
@@ -553,6 +554,13 @@ PRIVATE void pick_proc()
    */
   for (q=0; q < NR_SCHED_QUEUES; q++) {	
       if ( (rp = rdy_head[q]) != NIL_PROC) {
+          /* if a non-empty queue is found, pick newest process */
+          for (xp = rp; xp != NIL_PROC; xp = xp->p_nextready) {
+              if( xp->p_start_time > rp->p_start_time) {
+                  rp = xp;
+              }
+          }
+
           next_ptr = rp;			/* run process 'rp' next */
           if (priv(rp)->s_flags & BILLABLE)	 	
               bill_ptr = rp;			/* bill for system time */

@@ -51,6 +51,8 @@ struct proc {
 
   char p_name[P_NAME_LEN];	/* name of the process, including \0 */
 
+  clock_t p_start_time;     /* time started in ticks */
+
 #if DEBUG_SCHED_CHECK
   int p_ready, p_found;
 #endif
