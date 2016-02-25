@@ -9,20 +9,21 @@
 
 #include "is.h"
 
-#define NHOOKS 15
+#define NHOOKS 16
 
 struct hook_entry {
 	int key;
 	void (*function)(void);
 	char *name;
 } hooks[NHOOKS] = {
-	{ F1, 	messtable_dmp, "Message tranferred between processes" },
+    { F1,   proctab_dmp, "Kernel process table" },
 	{ F2,   memmap_dmp, "Process memory maps" },
 	{ F3,	image_dmp, "System image" },
 	{ F4,	privileges_dmp, "Process privileges" },
 	{ F5,	monparams_dmp, "Boot monitor parameters" },
 	{ F6,	irqtab_dmp, "IRQ hooks and policies" },
 	{ F7,	kmessages_dmp, "Kernel messages" },
+	{ F9, 	messtable_dmp, "Message tranferred between processes" },
 	{ F10,	kenv_dmp, "Kernel parameters" },
 	{ F11,	timing_dmp, "Timing details (if enabled)" },
 	{ F12,	sched_dmp, "Scheduling queues" },
