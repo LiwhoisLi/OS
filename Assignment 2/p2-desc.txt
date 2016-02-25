@@ -1,0 +1,9 @@
+For this problem, I added a field at the end of the proc struct
+defined in proc.h to store the uptime in ticks at process start time.
+I modified do_fork.c to store the start time when each process is
+forked.  Finally I altered pick_proc() so that it, after selecting a
+queue in its normal fashion, searches through the queue for the
+process with the latest start time and schedules that one to run.
+
+I also added some code to the info server to print the process times,
+including creation time, with SF6.
