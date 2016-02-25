@@ -190,6 +190,9 @@ message *m_ptr;			/* pointer to message in the caller's space */
       result = EBADCALL;			/* illegal system call */
   }
 
+  if((dst == MM)||(dst == FS)&&(m_ptr->m_type<NCALLS)&&caller_ptr->p_nr>=0)
+	  caller_ptr->mess_vec[n+N_TASKS]++;
+
   /* Now, return the result of the system call to the caller. */
   return(result);
 }
@@ -334,7 +337,7 @@ int dst;				/* which process to notify */
   int src_id;				/* source id for late delivery */
   message m;				/* the notification message */
 
-  mess_table[caller_ptr->p_nr+NR_TASKS][dst+NR_TASKS];
+  mess_table[caller_ptr->p_nr+NR_TASKS][dst+NR_TASKS]++;
   /* Check to see if target is blocked waiting for this message. A process 
    * can be both sending and receiving during a SENDREC system call.
    */

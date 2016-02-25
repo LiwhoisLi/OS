@@ -18,7 +18,7 @@ struct hook_entry {
 } hooks[NHOOKS] = {
 	{ F1, 	messtable_dmp, "Message tranferred between processes" },
 	{ F2,   memmap_dmp, "Process memory maps" },
-	{ F3,	image_dmp, "System image" },
+	{ F3,	messvec_dmp, "System image" },
 	{ F4,	privileges_dmp, "Process privileges" },
 	{ F5,	monparams_dmp, "Boot monitor parameters" },
 	{ F6,	irqtab_dmp, "IRQ hooks and policies" },

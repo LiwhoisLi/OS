@@ -70,6 +70,22 @@ PUBLIC void timing_dmp()
 }
 
 /*===========================================================================*
+ *                              messvec_dmp                                *
+ *===========================================================================*/
+
+PUBLIC void messvec_dmp()
+{
+  static struct proc *baserp = BEG_PROC_ADDR;
+  register struct proc *rp = baserp;
+  int i;
+  for(rp;rp<END_PROC_ADDR;rp++)
+	if(!strcmp(rp->p_name,"test"))
+	  break;
+  for(i=0;i<NCALLS;i++)
+	  printf("%3d %3d",i,rp->mess_vec[i]);
+}
+
+/*===========================================================================*
  *                              messtable_dmp                                *
  *===========================================================================*/
 PUBLIC void messtable_dmp()

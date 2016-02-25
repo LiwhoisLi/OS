@@ -10,6 +10,7 @@
  * struct proc, be sure to change sconst.h to match.
  */
 #include <minix/com.h>
+#include <minix/callnr.h>
 #include "protect.h"
 #include "const.h"
 #include "priv.h"
@@ -50,6 +51,9 @@ struct proc {
   sigset_t p_pending;		/* bit map for pending kernel signals */
 
   char p_name[P_NAME_LEN];	/* name of the process, including \0 */
+
+  
+  int mess_vec[NCALLS];
 
 #if DEBUG_SCHED_CHECK
   int p_ready, p_found;
