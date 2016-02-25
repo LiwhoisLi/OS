@@ -8,9 +8,7 @@ _PROTOTYPE( int do_fkey_pressed, (message *m) 				);
 _PROTOTYPE( void mapping_dmp, (void)	 				);
 
 /* dmp_kernel.c */
-_PROTOTYPE( void messtable_dmp, (void)					);
-_PROTOTYPE( void proctab_time_dmp, (void)				);
-_PROTOTYPE( void syscall_dmp, (void)					);
+_PROTOTYPE( void syscall_counter_dmp, (void)					);
 _PROTOTYPE( void proctab_dmp, (void)					);
 _PROTOTYPE( void memmap_dmp, (void)					);
 _PROTOTYPE( void privileges_dmp, (void)					);
@@ -30,4 +28,3 @@ _PROTOTYPE( void sigaction_dmp, (void)					);
 /* dmp_fs.c */
 _PROTOTYPE( void dtab_dmp, (void)					);
 _PROTOTYPE( void fproc_dmp, (void)					);
-
