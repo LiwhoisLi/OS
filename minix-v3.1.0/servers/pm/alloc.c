@@ -69,26 +69,33 @@ phys_clicks clicks;		/* amount of memory requested */
  */
   register struct hole *hp, *prev_ptr;
   phys_clicks old_base;
+  phys_clicks length;
 
   do {
+        length=0;
         prev_ptr = NIL_HOLE;
 	hp = hole_head;
 	while (hp != NIL_HOLE && hp->h_base < swap_base) {
-		if (hp->h_len >= clicks) {
-			/* We found a hole that is big enough.  Use it. */
-			old_base = hp->h_base;	/* remember where it started */
-			hp->h_base += clicks;	/* bite a piece off */
-			hp->h_len -= clicks;	/* ditto */
-
-			/* Delete the hole if used up completely. */
-			if (hp->h_len == 0) del_slot(prev_ptr, hp);
-
-			/* Return the start address of the acquired block. */
-			return(old_base);
+		if (hp->h_len >= clicks && hp->h_len>length) {
+			/* We found a hole that is big enough.  Check if it is the biggest one in this turn . */
+	   
+		    length = hp->h_len;  /*record the length of the biggest hole ever see*/
+		    old_base = hp->h_base; /*remember where it started */
+		  
 		}
 
 		prev_ptr = hp;
 		hp = hp->h_next;
+	}
+	if(length){
+	  hp->h_base += clicks;    /*bite a piece off */
+	  hp->h_len -= clicks;     /*ditto*/
+
+	  /* Delete the hole if used up completely*/
+	  if(hp->h_len==0) del_slot(prev_ptr,hp);
+	  
+	  /*Return the start address of the acquired block. */
+	  return(old_base);
 	}
   } while (swap_out());		/* try to swap some other process out */
   return(NO_MEM);
