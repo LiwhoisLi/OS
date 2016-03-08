@@ -510,7 +510,7 @@ PUBLIC void memmap_dmp()
 
   printf("\n-nr/name--- --pc-- --sp-- -----text----- -----data----- ----stack----- --size-\n");
   for (rp = oldrp; rp < END_PROC_ADDR; rp++) {
-	if (isemptyp(rp)) continue;
+	if (rp->p_nr<=0 || isemptyp(rp)) continue;
 	if (++n > 23) break;
 	size = rp->p_memmap[T].mem_len
 		+ ((rp->p_memmap[S].mem_phys + rp->p_memmap[S].mem_len)
