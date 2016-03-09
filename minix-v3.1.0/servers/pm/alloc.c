@@ -25,14 +25,14 @@
 #include "../../kernel/config.h"
 #include "../../kernel/type.h"
 
-#define NR_HOLES  (2*NR_PROCS)	/* max # entries in hole table */
-#define NIL_HOLE (struct hole *) 0
+/*#define NR_HOLES  (2*NR_PROCS)	/* max # entries in hole table 
+#define NIL_HOLE (struct hole *) 0*/
 
-PRIVATE struct hole {
-  struct hole *h_next;		/* pointer to next entry on the list */
-  phys_clicks h_base;		/* where does the hole begin? */
-  phys_clicks h_len;		/* how big is the hole? */
-} hole[NR_HOLES];
+struct hole hole[NR_HOLES];
+  /*  struct hole *h_next;		/* pointer to next entry on the list /
+  phys_clicks h_base;		/* where does the hole begin? /
+  phys_clicks h_len;		/* how big is the hole? 
+  } hole[NR_HOLES];*/
 
 PRIVATE struct hole *hole_head;	/* pointer to first hole */
 PRIVATE struct hole *free_slots;/* ptr to list of unused table slots */

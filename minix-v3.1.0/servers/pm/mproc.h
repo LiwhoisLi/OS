@@ -5,6 +5,17 @@
  * of corresponding slots referring to the same process in all three.
  */
 #include <timers.h>
+#include <minix/types.h>
+#include <minix/config.h>
+
+#define NR_HOLES (2*NR_PROCS)
+#define NIL_HOLE (struct hole *) 0
+
+EXTERN struct hole{
+  struct hole *h_next;
+  phys_clicks h_base;
+  phys_clicks h_len;
+}
 
 EXTERN struct mproc {
   struct mem_map mp_seg[NR_LOCAL_SEGS]; /* points to text, data, stack */

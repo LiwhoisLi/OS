@@ -1,6 +1,5 @@
 /* Function prototypes. */
 
-struct hole;
 struct mproc;
 struct stat;
 struct mem_map;

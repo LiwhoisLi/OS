@@ -12,6 +12,8 @@
 #include <timers.h> 
 
 PUBLIC struct mproc mproc[NR_PROCS];
+PUBLIC struct hole hole[NR_HOLES];
+
 
 /*===========================================================================*
  *				mproc_dmp				     *
@@ -97,3 +99,15 @@ PUBLIC void sigaction_dmp()
   prev_i = i;
 }
 
+PUBLIC void hole_dmp()
+{
+  int i=0;
+  struct hole *hole_pt;
+  printf("Hole list dump\n");
+
+  gesysinfo(PM_PROC_NR, SI_HOLE_LIST, hole);
+
+  for(hole_pt = hole ;hole_pt!=NIL_HOLE; hole_pt = hole_pt->h_next)
+    printf("Hole: %d, Base Addr: %u, Length: %u\n",++i,hole_pt->h_base,hole_pt->h_len;
+
+}
