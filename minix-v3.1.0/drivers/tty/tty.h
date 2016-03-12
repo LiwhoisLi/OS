@@ -52,6 +52,7 @@ typedef struct tty {
   char tty_inhibited;		/* 1 when STOP (^S) just seen (stops output) */
   char tty_pgrp;		/* slot number of controlling process */
   char tty_openct;		/* count of number of opens of this tty */
+  char tty_mark;        /* current position of mark in tty buffer */
 
   /* Information about incomplete I/O requests is stored here. */
   char tty_inrepcode;		/* reply code, TASK_REPLY or REVIVE */
@@ -85,6 +86,7 @@ typedef struct tty {
   struct winsize tty_winsize;	/* window size (#lines and #columns) */
 
   u16_t tty_inbuf[TTY_IN_BYTES];/* tty input buffer */
+  u16_t tty_killbuf[TTY_IN_BYTES];  /* buffer for deleted chars */
 
 } tty_t;
 

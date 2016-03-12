@@ -139,7 +139,7 @@ PRIVATE struct termios termios_defaults = {
   {
 	TEOF_DEF, TEOL_DEF, TERASE_DEF, TINTR_DEF, TKILL_DEF, TMIN_DEF,
 	TQUIT_DEF, TTIME_DEF, TSUSP_DEF, TSTART_DEF, TSTOP_DEF,
-	TREPRINT_DEF, TLNEXT_DEF, TDISCARD_DEF,
+	TREPRINT_DEF, TLNEXT_DEF, TDISCARD_DEF, TMARK_DEF, TPULL_DEF, TPUSH_DEF,
   },
 };
 PRIVATE struct winsize winsize_defaults;	/* = all zeroes */
@@ -1002,6 +1002,22 @@ int count;			/* number of input characters */
 			reprint(tp);
 			continue;
 		}
+
+        /* MARK (^^) to mark a character position */
+        if (ch == tp->tty_termios.c_cc[VMARK]) {
+            rawecho(tp, 'm');
+        }
+
+        /* PULL (^[) to kill from current position to mark */
+        if (ch == tp->tty_termios.c_cc[VPULL]) {
+            rawecho(tp, '<');
+        }
+
+        /* PUSH (^]) to paste at current position */
+        if (ch == tp->tty_termios.c_cc[VPUSH]) {
+            rawecho(tp, '>');
+        }
+
 	}
 
 	/* _POSIX_VDISABLE is a normal character value, so better escape it. */
