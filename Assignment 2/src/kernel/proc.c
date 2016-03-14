@@ -71,17 +71,9 @@ FORWARD _PROTOTYPE( void pick_proc, (void) );
 		break;							\
 	}
 
-#if (CHIP == INTEL)
 #define CopyMess(s,sp,sm,dp,dm) \
 	cp_mess(s, (sp)->p_memmap[D].mem_phys,	\
 		 (vir_bytes)sm, (dp)->p_memmap[D].mem_phys, (vir_bytes)dm)
-#endif /* (CHIP == INTEL) */
-
-#if (CHIP == M68000)
-/* M68000 does not have cp_mess() in assembly like INTEL. Declare prototype
- * for cp_mess() here and define the function below. Also define CopyMess. 
- */
-#endif /* (CHIP == M68000) */
 
 /*===========================================================================*
  *				sys_call				     * 
@@ -149,9 +141,9 @@ message *m_ptr;			/* pointer to message in the caller's space */
           return(ECALLDENIED);		/* call denied by ipc mask */
       }
 
-      if (isemptyn(src_dst)) {
-	if(!shutdown_started)
-	 kprintf("sys_call: dead dst; %d->%d\n", proc_nr(caller_ptr), src_dst);
+      if (isemptyn(src_dst) && !shutdown_started) {
+          kprintf("sys_call: dead dest; %d, %d, %d\n", 
+              function, proc_nr(caller_ptr), src_dst);
           return(EDEADDST); 		/* cannot send to the dead */
       }
   }
@@ -217,8 +209,10 @@ unsigned flags;				/* system call flags */
   	xp = proc_addr(xp->p_sendto);		/* get xp's destination */
   	if (xp == caller_ptr) return(ELOCKED);	/* deadlock if cyclic */
   }
-  mess_table[caller_ptr->p_nr+NR_TASKS][dst+NR_TASKS]++;
-  
+	
+	/*Update the value in process message vector*/
+	proc_mes[NR_TASKS+callerptr->p_nr][NR_TASKS+dst]++;
+
   /* Check if 'dst' is blocked waiting for this message. The destination's 
    * SENDING flag may be set when its SENDREC call blocked while sending.  
    */
@@ -334,7 +328,9 @@ int dst;				/* which process to notify */
   int src_id;				/* source id for late delivery */
   message m;				/* the notification message */
 
-  mess_table[caller_ptr->p_nr+NR_TASKS][dst+NR_TASKS];
+	/*Update the value in process message vector*/
+	proc_mes[NR_TASKS+callerptr->p_nr][NR_TASKS+dst]++;
+
   /* Check to see if target is blocked waiting for this message. A process 
    * can be both sending and receiving during a SENDREC system call.
    */
@@ -371,7 +367,7 @@ int src;			/* sender of the notification */
 int dst;			/* who is to be notified */
 {
 /* Safe gateway to mini_notify() for tasks and interrupt handlers. The sender
- * is explicitely given to prevent confusion where the call comes from. MINIX 
+ * is explicitly given to prevent confusion where the call comes from. MINIX 
  * kernel is not reentrant, which means to interrupts are disabled after 
  * the first kernel entry (hardware interrupt, trap, or exception). Locking
  * is done by temporarily disabling interrupts. 
@@ -406,11 +402,6 @@ register struct proc *rp;	/* this process is now runnable */
   int q;	 				/* scheduling queue to use */
   int front;					/* add to front or back */
 
-#if DEBUG_SCHED_CHECK
-  check_runqueues("enqueue");
-  if (rp->p_ready) kprintf("enqueue() already ready process\n");
-#endif
-
   /* Determine where to insert to process. */
   sched(rp, &q, &front);
 
@@ -431,11 +422,6 @@ register struct proc *rp;	/* this process is now runnable */
 
   /* Now select the next process to run. */
   pick_proc();			
-
-#if DEBUG_SCHED_CHECK
-  rp->p_ready = 1;
-  check_runqueues("enqueue");
-#endif
 }
 
 /*===========================================================================*
@@ -458,11 +444,6 @@ register struct proc *rp;	/* this process is no longer runnable */
 		panic("stack overrun by task", proc_nr(rp));
   }
 
-#if DEBUG_SCHED_CHECK
-  check_runqueues("dequeue");
-  if (! rp->p_ready) kprintf("dequeue() already unready process\n");
-#endif
-
   /* Now make sure that the process is not in its ready queue. Remove the 
    * process if it is found. A process can be made unready even if it is not 
    * running by being sent a signal that kills it.
@@ -480,11 +461,6 @@ register struct proc *rp;	/* this process is no longer runnable */
       }
       prev_xp = *xpp;				/* save previous in chain */
   }
-  
-#if DEBUG_SCHED_CHECK
-  rp->p_ready = 0;
-  check_runqueues("dequeue");
-#endif
 }
 
 /*===========================================================================*
@@ -516,7 +492,7 @@ int *front;					/* return: front or back */
   }
 
   /* Determine the new priority of this process. The bounds are determined
-   * by IDLE's queue and the maximum priority of this process. Kernel task 
+   * by IDLE's queue and the maximum priority of this process. Kernel tasks 
    * and the idle process are never changed in priority.
    */
   if (penalty != 0 && ! iskernelp(rp)) {

@@ -55,7 +55,6 @@ PUBLIC int do_freemem()
 PUBLIC int do_getsysinfo()
 {
   struct mproc *proc_addr;
-  phys_clicks send_h[4*NR_PROCS];
   vir_bytes src_addr, dst_addr;
   struct kinfo kinfo;
   size_t len;
@@ -76,12 +75,6 @@ PUBLIC int do_getsysinfo()
         src_addr = (vir_bytes) mproc;
         len = sizeof(struct mproc) * NR_PROCS;
         break;
-  case SI_HOLE_LIST:
-        send_hole(send_h);
-	src_addr = (vir_bytes) send_h;
-	len = sizeof(phys_clicks)*4*NR_PROCS;
-	break;
-		
   default:
   	return(EINVAL);
   }

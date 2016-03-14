@@ -8,7 +8,6 @@ struct memory;
 #include <timers.h>
 
 /* alloc.c */
-_PROTOTYPE( void send_hole, ( phys_clicks *send_h)                    );
 _PROTOTYPE( phys_clicks alloc_mem, (phys_clicks clicks)			);
 _PROTOTYPE( void free_mem, (phys_clicks base, phys_clicks clicks)	);
 _PROTOTYPE( void mem_init, (struct memory *chunks, phys_clicks *free)	);

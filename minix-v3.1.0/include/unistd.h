@@ -40,7 +40,6 @@
 #define SI_PROC_ADDR	   1	/* address of process table */
 #define SI_PROC_TAB	   2	/* copy of entire process table */
 #define SI_DMAP_TAB	   3	/* get device <-> driver mappings */
-#define SI_HOLE_LIST   4
 
 /* NULL must be defined in <unistd.h> according to POSIX Sec. 2.7.1. */
 #define NULL    ((void *)0)

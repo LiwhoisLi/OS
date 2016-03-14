@@ -97,17 +97,3 @@ PUBLIC void sigaction_dmp()
   prev_i = i;
 }
 
-PUBLIC void hole_dmp()
-{
-	phys_clicks hole[4*NR_PROCS];
-	int i=0;
-
-	getsysinfo(PM_PROC_NR, SI_HOLE_LIST, hole);
-	
-	printf("Hole List dmp \n");
-	printf("Hole#------Base------Length\n");
-	while(hole[i]>0){
-		printf(" %3d      %6u    %8u\n",i/2,hole[i],hole[i+1]);
-		i += 2;
-	}
-}

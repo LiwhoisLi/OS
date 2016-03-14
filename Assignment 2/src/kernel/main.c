@@ -44,6 +44,9 @@ PUBLIC void main()
   /* Initialize the interrupt controller. */
   intr_init(1);
 
+  /* Initialize the message matrix */
+  proc_mes[NR_TASKS + NR_PROCS][NR_TASKS + NR_PROCS]={0};
+
   /* Clear the process table. Anounce each slot as empty and set up mappings 
    * for proc_addr() and proc_nr() macros. Do the same for the table with 
    * privilege structures for the system processes. 
@@ -59,9 +62,7 @@ PUBLIC void main()
 	ppriv_addr[i] = sp;			/* priv ptr from number */
   }
 
-  memset(mess_table,0,sizeof(int)*(NR_TASKS +NR_PROCS)*(NR_TASKS + NR_PROCS));
-
-  /* Set up proc table entries for processes in boot image.  The stacks of the
+  /* Set up proc table entries for tasks and servers.  The stacks of the
    * kernel tasks are initialized to an array in data space.  The stacks
    * of the servers have been added to the data segment by the monitor, so
    * the stack pointer is set to the end of the data segment.  All the
@@ -144,19 +145,6 @@ PUBLIC void main()
 	alloc_segments(rp);
   }
 
-#if ENABLE_BOOTDEV 
-  /* Expect an image of the boot device to be loaded into memory as well. 
-   * The boot device is the last module that is loaded into memory, and, 
-   * for example, can contain the root FS (useful for embedded systems). 
-   */
-  hdrindex ++;
-  phys_copy(aout + hdrindex * A_MINHDR,vir2phys(&e_hdr),(phys_bytes) A_MINHDR);
-  if (e_hdr.a_flags & A_IMG) {
-  	kinfo.bootdev_base = e_hdr.a_syms; 
-  	kinfo.bootdev_size = e_hdr.a_data; 
-  }
-#endif
-
   /* We're definitely not shutting down. */
   shutdown_started = 0;
 
@@ -174,14 +162,13 @@ PUBLIC void main()
 PRIVATE void announce(void)
 {
   /* Display the MINIX startup banner. */
-  kprintf("\nMINIX %s.%s. "
-  "Copyright 2006, Vrije Universiteit, Amsterdam, The Netherlands\n",
+  kprintf("MINIX %s.%s."  
+      "Copyright 2006, Vrije Universiteit, Amsterdam, The Netherlands\n", 
       OS_RELEASE, OS_VERSION);
-#if (CHIP == INTEL)
+
   /* Real mode, or 16/32-bit protected mode? */
   kprintf("Executing in %s mode.\n\n",
       machine.protected ? "32-bit protected" : "real");
-#endif
 }
 
 /*===========================================================================*
@@ -195,7 +182,7 @@ int how;
   register struct proc *rp; 
   message m;
 
-  /* Show debugging dumps on panics. Make sure that the TTY driver is still 
+  /* Show debugging dumps on panics. Make sure that the TTY task is still 
    * available to handle them. This is done with help of a non-blocking send. 
    * We rely on TTY to call sys_abort() when it is done with the dumps.
    */

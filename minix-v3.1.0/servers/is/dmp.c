@@ -9,7 +9,7 @@
 
 #include "is.h"
 
-#define NHOOKS 16
+#define NHOOKS 15
 
 struct hook_entry {
 	int key;
@@ -31,7 +31,6 @@ struct hook_entry {
 	{ SF3,	fproc_dmp, "Filesystem process table" },
 	{ SF4,	dtab_dmp, "Device/Driver mapping" },
 	{ SF5,	mapping_dmp, "Print key mappings" },
-	{ SF6,  hole_dmp, "nothing"},
 };
 
 /*===========================================================================*
