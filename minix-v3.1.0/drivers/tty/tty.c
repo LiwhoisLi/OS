@@ -116,6 +116,7 @@ FORWARD _PROTOTYPE( void in_transfer, (tty_t *tp)			);
 FORWARD _PROTOTYPE( int tty_echo, (tty_t *tp, int ch)			);
 FORWARD _PROTOTYPE( void rawecho, (tty_t *tp, int ch)			);
 FORWARD _PROTOTYPE( int back_over, (tty_t *tp)				);
+FORWARD _PROTOTYPE( void paste, (tty_t *tp)                 );
 FORWARD _PROTOTYPE( void reprint, (tty_t *tp)				);
 FORWARD _PROTOTYPE( void dev_ioctl, (tty_t *tp)				);
 FORWARD _PROTOTYPE( void setattr, (tty_t *tp)				);
@@ -1006,16 +1007,22 @@ int count;			/* number of input characters */
         /* MARK (^^) to mark a character position */
         if (ch == tp->tty_termios.c_cc[VMARK]) {
             rawecho(tp, 'm');
+            continue;
         }
 
         /* PULL (^[) to kill from current position to mark */
         if (ch == tp->tty_termios.c_cc[VPULL]) {
             rawecho(tp, '<');
+            if ( ! tp->tty_mark ) {
+                continue;
+            }
+            continue;
         }
 
         /* PUSH (^]) to paste at current position */
         if (ch == tp->tty_termios.c_cc[VPUSH]) {
-            rawecho(tp, '>');
+            paste(tp);
+            continue;
         }
 
 	}
@@ -1220,8 +1227,19 @@ register tty_t *tp;
 
   if (tp->tty_incount == 0) return(0);	/* queue empty */
   head = tp->tty_inhead;
+
+  
   if (head == tp->tty_inbuf) head = bufend(tp->tty_inbuf);
   if (*--head & IN_EOT) return(0);		/* can't erase "line breaks" */
+
+  /* grab character and put it in kill buffer */
+  if(tp->tty_outkill == tp->tty_killbuf) {
+      tp->tty_outkill = bufend(tp->tty_killbuf) - 1;
+  } else {
+      --tp->tty_outkill;
+  }
+  *tp->tty_outkill = *head;
+
   if (tp->tty_reprint) reprint(tp);		/* reprint if messed up */
   tp->tty_inhead = head;
   tp->tty_incount--;
@@ -1237,8 +1255,27 @@ register tty_t *tp;
   return(1);				/* one character erased */
 }
 
-/*===========================================================================*
- *				reprint					     *
+/*===========================================================================* *				paste					     *
+ *===========================================================================*/
+PRIVATE void paste(tp)
+register tty_t *tp;		/* pointer to tty struct */
+{
+/* add characters to the tty's buffer
+ */
+  while(tp->tty_outkill != tp->tty_inkill) {
+     tty_echo(tp, *tp->tty_outkill);
+      *tp->tty_inhead++ = *tp->tty_outkill;
+   	  if (tp->tty_inhead == bufend(tp->tty_inbuf))
+  	          tp->tty_inhead = tp->tty_inbuf;
+      tp->tty_incount++;
+      if(++tp->tty_outkill == bufend(tp->tty_killbuf)) 
+              tp->tty_outkill = tp->tty_killbuf;
+  }
+}
+
+
+
+/*===========================================================================* *				reprint					     *
  *===========================================================================*/
 PRIVATE void reprint(tp)
 register tty_t *tp;		/* pointer to tty struct */
@@ -1519,6 +1556,7 @@ PRIVATE void tty_init()
   	tmr_inittimer(&tp->tty_tmr);
 
   	tp->tty_intail = tp->tty_inhead = tp->tty_inbuf;
+    tp->tty_inkill = tp->tty_outkill = tp->tty_killbuf;
   	tp->tty_min = 1;
   	tp->tty_termios = termios_defaults;
   	tp->tty_icancel = tp->tty_ocancel = tp->tty_ioctl = tp->tty_close =

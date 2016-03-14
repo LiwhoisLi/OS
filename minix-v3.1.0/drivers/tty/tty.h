@@ -32,6 +32,8 @@ typedef struct tty {
   /* Input queue.  Typed characters are stored here until read by a program. */
   u16_t *tty_inhead;		/* pointer to place where next char goes */
   u16_t *tty_intail;		/* pointer to next char to be given to prog */
+  u16_t *tty_inkill;        /* pointer to end of kill ring */
+  u16_t *tty_outkill;       /* pointer to beginning of kill ring */
   int tty_incount;		/* # chars in the input queue */
   int tty_eotct;		/* number of "line breaks" in input queue */
   devfun_t tty_devread;		/* routine to read from low level buffers */
@@ -52,7 +54,7 @@ typedef struct tty {
   char tty_inhibited;		/* 1 when STOP (^S) just seen (stops output) */
   char tty_pgrp;		/* slot number of controlling process */
   char tty_openct;		/* count of number of opens of this tty */
-  char tty_mark;        /* current position of mark in tty buffer */
+  char *tty_mark;       /* current position of mark in tty buffer */
 
   /* Information about incomplete I/O requests is stored here. */
   char tty_inrepcode;		/* reply code, TASK_REPLY or REVIVE */
