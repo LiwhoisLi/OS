@@ -32,6 +32,8 @@ typedef struct tty {
   /* Input queue.  Typed characters are stored here until read by a program. */
   u16_t *tty_inhead;		/* pointer to place where next char goes */
   u16_t *tty_intail;		/* pointer to next char to be given to prog */
+  u16_t *tty_inkill;        /* pointer to end of kill ring */
+  u16_t *tty_outkill;       /* pointer to beginning of kill ring */
   int tty_incount;		/* # chars in the input queue */
   int tty_eotct;		/* number of "line breaks" in input queue */
   devfun_t tty_devread;		/* routine to read from low level buffers */
@@ -52,6 +54,7 @@ typedef struct tty {
   char tty_inhibited;		/* 1 when STOP (^S) just seen (stops output) */
   char tty_pgrp;		/* slot number of controlling process */
   char tty_openct;		/* count of number of opens of this tty */
+  char tty_killing;     /* if we've just typed the pull character */
 
   /* Information about incomplete I/O requests is stored here. */
   char tty_inrepcode;		/* reply code, TASK_REPLY or REVIVE */
@@ -85,6 +88,7 @@ typedef struct tty {
   struct winsize tty_winsize;	/* window size (#lines and #columns) */
 
   u16_t tty_inbuf[TTY_IN_BYTES];/* tty input buffer */
+  u16_t tty_killbuf[TTY_IN_BYTES];  /* buffer for deleted chars */
 
 } tty_t;
 
@@ -131,10 +135,10 @@ _PROTOTYPE( void sigchar, (struct tty *tp, int sig)			);
 _PROTOTYPE( void tty_task, (void)					);
 _PROTOTYPE( int in_process, (struct tty *tp, char *buf, int count)	);
 _PROTOTYPE( void out_process, (struct tty *tp, char *bstart, char *bpos,
-				char *bend, int *icount, int *ocount)	);
+        char *bend, int *icount, int *ocount)	);
 _PROTOTYPE( void tty_wakeup, (clock_t now)				);
 _PROTOTYPE( void tty_reply, (int code, int replyee, int proc_nr,
-							int status)	);
+              int status)	);
 _PROTOTYPE( int tty_devnop, (struct tty *tp, int try)			);
 _PROTOTYPE( int select_try, (struct tty *tp, int ops)			);
 _PROTOTYPE( int select_retry, (struct tty *tp)				);
@@ -173,4 +177,3 @@ _PROTOTYPE( void vid_vid_copy, (unsigned src, unsigned dst, unsigned count));
 _PROTOTYPE( void mem_vid_copy, (u16_t *src, unsigned dst, unsigned count));
 
 #endif /* (CHIP == INTEL) */
-

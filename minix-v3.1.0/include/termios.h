@@ -8,7 +8,7 @@ typedef unsigned char cc_t;
 typedef unsigned int speed_t;
 
 #define NCCS		   20	/* size of cc_c array, some extra space
-				 * for extensions. */
+         * for extensions. */
 
 /* Primary terminal control structure. POSIX Table 7-1. */
 struct termios {
@@ -74,13 +74,13 @@ struct termios {
 #define VSTART               9	/* cc_c[VSTART] = START char (^S) */
 #define VSTOP               10	/* cc_c[VSTOP] = STOP char (^Q) */
 
-#define _POSIX_VDISABLE	  (cc_t)0xFF	/* You can't even generate this 
-					 * character with 'normal' keyboards.
-					 * But some language specific keyboards
-					 * can generate 0xFF. It seems that all
-					 * 256 are used, so cc_t should be a
-					 * short...
-					 */
+#define _POSIX_VDISABLE	  (cc_t)0xFF	/* You can't even generate this
+           * character with 'normal' keyboards.
+           * But some language specific keyboards
+           * can generate 0xFF. It seems that all
+           * 256 are used, so cc_t should be a
+           * short...
+           */
 
 /* Values for the baud rate settings.  POSIX Table 7-6. */
 #define B0		0x0000	/* hang up the line */
@@ -131,7 +131,7 @@ _PROTOTYPE( int cfsetispeed, (struct termios *_termios_p, speed_t _speed)    );
 _PROTOTYPE( int cfsetospeed, (struct termios *_termios_p, speed_t _speed)    );
 _PROTOTYPE( int tcgetattr, (int _filedes, struct termios *_termios_p)        );
 _PROTOTYPE( int tcsetattr, \
-	(int _filedes, int _opt_actions, const struct termios *_termios_p)   );
+  (int _filedes, int _opt_actions, const struct termios *_termios_p)   );
 
 #define cfgetispeed(termios_p)		((termios_p)->c_ispeed)
 #define cfgetospeed(termios_p)		((termios_p)->c_ospeed)
@@ -161,6 +161,9 @@ _PROTOTYPE( int tcsetattr, \
 #define VLNEXT            12    /* cc_c[VLNEXT] (^V) */
 #define VDISCARD          13    /* cc_c[VDISCARD] (^O) */
 
+#define VPULL           14      /* cc_c[VPULL] (^[) */
+#define VPUSH           15      /* cc_c[VPUSH] (^]) */
+
 /* Extensions to baud rate settings. */
 #define B57600		0x0100	/* 57600 baud */
 #define B115200		0x0200	/* 115200 baud */
@@ -187,19 +190,21 @@ _PROTOTYPE( int tcsetattr, \
 #define	TREPRINT_DEF	'\22'	/* ^R */
 #define	TLNEXT_DEF	'\26'	/* ^V */
 #define	TDISCARD_DEF	'\17'	/* ^O */
+#define TPULL_DEF   '\33'       /* ^[ */
+#define TPUSH_DEF   '\35'       /* ^] */
 
 /* Window size. This information is stored in the TTY driver but not used.
- * This can be used for screen based applications in a window environment. 
- * The ioctls TIOCGWINSZ and TIOCSWINSZ can be used to get and set this 
+ * This can be used for screen based applications in a window environment.
+ * The ioctls TIOCGWINSZ and TIOCSWINSZ can be used to get and set this
  * information.
  */
 
 struct winsize
 {
-	unsigned short	ws_row;		/* rows, in characters */
-	unsigned short	ws_col;		/* columns, in characters */
-	unsigned short	ws_xpixel;	/* horizontal size, pixels */
-	unsigned short	ws_ypixel;	/* vertical size, pixels */
+  unsigned short	ws_row;		/* rows, in characters */
+  unsigned short	ws_col;		/* columns, in characters */
+  unsigned short	ws_xpixel;	/* horizontal size, pixels */
+  unsigned short	ws_ypixel;	/* vertical size, pixels */
 };
 #endif /* _MINIX */
 
