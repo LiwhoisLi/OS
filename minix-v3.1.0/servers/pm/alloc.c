@@ -55,6 +55,19 @@ FORWARD _PROTOTYPE( int swap_out, (void)				    );
 #define swap_out()	(0)
 #endif
 
+PUBLIC void send_hole(phys_clicks* sen)
+{
+	register struct hole *hp = hole_head;
+	int i=0;
+	while(hp!=NIL_HOLE)
+	{
+		sen[i++] = hp->h_base;
+		sen[i++] = hp->h_len;
+		hp = hp->h_next;
+	}
+	sen[i] = 0;
+}
+
 /*===========================================================================*
  *				alloc_mem				     *
  *===========================================================================*/
@@ -67,29 +80,37 @@ phys_clicks clicks;		/* amount of memory requested */
  * always on a click boundary.  This procedure is called when memory is
  * needed for FORK or EXEC.  Swap other processes out if needed.
  */
-  register struct hole *hp, *prev_ptr;
+  register struct hole *hp,*re, *prev_ptr;
   phys_clicks old_base;
+  int length;
 
   do {
         prev_ptr = NIL_HOLE;
 	hp = hole_head;
+	length = 0;
 	while (hp != NIL_HOLE && hp->h_base < swap_base) {
-		if (hp->h_len >= clicks) {
+		if (hp->h_len>length && hp->h_len >= clicks) {
 			/* We found a hole that is big enough.  Use it. */
-			old_base = hp->h_base;	/* remember where it started */
-			hp->h_base += clicks;	/* bite a piece off */
-			hp->h_len -= clicks;	/* ditto */
-
-			/* Delete the hole if used up completely. */
-			if (hp->h_len == 0) del_slot(prev_ptr, hp);
-
-			/* Return the start address of the acquired block. */
-			return(old_base);
+			length = hp->h_len;
+			re = hp;
 		}
-
 		prev_ptr = hp;
 		hp = hp->h_next;
 	}
+	if(length)
+	 {
+			old_base = re->h_base;
+			re->h_base += clicks;	/* bite a piece off */
+			re->h_len -= clicks;	/* ditto */
+
+			/* Delete the hole if used up completely. */
+			if (re->h_len == 0) del_slot(prev_ptr, hp);
+
+			/* Return the start address of the acquired block. */
+			return(old_base);
+	 }
+
+	
   } while (swap_out());		/* try to swap some other process out */
   return(NO_MEM);
 }
