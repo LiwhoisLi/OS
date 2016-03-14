@@ -161,9 +161,8 @@ _PROTOTYPE( int tcsetattr, \
 #define VLNEXT            12    /* cc_c[VLNEXT] (^V) */
 #define VDISCARD          13    /* cc_c[VDISCARD] (^O) */
 
-#define VMARK           14      /* cc_c[VMARK] (^^) */
-#define VPULL           15      /* cc_c[VPULL] (^[) */
-#define VPUSH           16      /* cc_c[VPUSH] (^]) */
+#define VPULL           14      /* cc_c[VPULL] (^[) */
+#define VPUSH           15      /* cc_c[VPUSH] (^]) */
 
 /* Extensions to baud rate settings. */
 #define B57600		0x0100	/* 57600 baud */
@@ -191,7 +190,6 @@ _PROTOTYPE( int tcsetattr, \
 #define	TREPRINT_DEF	'\22'	/* ^R */
 #define	TLNEXT_DEF	'\26'	/* ^V */
 #define	TDISCARD_DEF	'\17'	/* ^O */
-#define TMARK_DEF   '\36'       /* ^^ */
 #define TPULL_DEF   '\33'       /* ^[ */
 #define TPUSH_DEF   '\35'       /* ^] */
 

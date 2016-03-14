@@ -54,7 +54,7 @@ typedef struct tty {
   char tty_inhibited;		/* 1 when STOP (^S) just seen (stops output) */
   char tty_pgrp;		/* slot number of controlling process */
   char tty_openct;		/* count of number of opens of this tty */
-  char *tty_mark;       /* current position of mark in tty buffer */
+  char tty_killing;     /* if we've just typed the pull character */
 
   /* Information about incomplete I/O requests is stored here. */
   char tty_inrepcode;		/* reply code, TASK_REPLY or REVIVE */

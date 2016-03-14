@@ -140,7 +140,7 @@ PRIVATE struct termios termios_defaults = {
   {
 	TEOF_DEF, TEOL_DEF, TERASE_DEF, TINTR_DEF, TKILL_DEF, TMIN_DEF,
 	TQUIT_DEF, TTIME_DEF, TSUSP_DEF, TSTART_DEF, TSTOP_DEF,
-	TREPRINT_DEF, TLNEXT_DEF, TDISCARD_DEF, TMARK_DEF, TPULL_DEF, TPUSH_DEF,
+	TREPRINT_DEF, TLNEXT_DEF, TDISCARD_DEF, TPULL_DEF, TPUSH_DEF,
   },
 };
 PRIVATE struct winsize winsize_defaults;	/* = all zeroes */
@@ -1004,24 +1004,34 @@ int count;			/* number of input characters */
 			continue;
 		}
 
-        /* MARK (^^) to mark a character position */
-        if (ch == tp->tty_termios.c_cc[VMARK]) {
-            rawecho(tp, 'm');
-            continue;
-        }
-
         /* PULL (^[) to kill from current position to mark */
         if (ch == tp->tty_termios.c_cc[VPULL]) {
-            rawecho(tp, '<');
-            if ( ! tp->tty_mark ) {
-                continue;
-            }
+            tp->tty_killing = 1;
             continue;
         }
 
         /* PUSH (^]) to paste at current position */
         if (ch == tp->tty_termios.c_cc[VPUSH]) {
             paste(tp);
+            continue;
+        }
+
+        if (tp->tty_killing) {
+            /* if we just typed PULL, look for a number */
+            int count = atoi((char*)&ch);
+            if(count > 0 && count < 10) {
+                while(count) {
+                    back_over(tp);
+                    count--;
+                }
+
+                if (!(tp->tty_termios.c_lflag & ECHOE)) {
+                    (void) tty_echo(tp, ch);
+                    if (tp->tty_termios.c_lflag & ECHOK)
+                        rawecho(tp, '\n');
+                }
+            }
+            tp->tty_killing = 0;
             continue;
         }
 
@@ -1233,12 +1243,14 @@ register tty_t *tp;
   if (*--head & IN_EOT) return(0);		/* can't erase "line breaks" */
 
   /* grab character and put it in kill buffer */
-  if(tp->tty_outkill == tp->tty_killbuf) {
-      tp->tty_outkill = bufend(tp->tty_killbuf) - 1;
-  } else {
-      --tp->tty_outkill;
+  if(tp->tty_killing) {
+      if(tp->tty_outkill == tp->tty_killbuf) {
+          tp->tty_outkill = bufend(tp->tty_killbuf) - 1;
+      } else {
+          --tp->tty_outkill;
+      }
+      *tp->tty_outkill = *head;
   }
-  *tp->tty_outkill = *head;
 
   if (tp->tty_reprint) reprint(tp);		/* reprint if messed up */
   tp->tty_inhead = head;
@@ -1272,8 +1284,6 @@ register tty_t *tp;		/* pointer to tty struct */
               tp->tty_outkill = tp->tty_killbuf;
   }
 }
-
-
 
 /*===========================================================================* *				reprint					     *
  *===========================================================================*/
@@ -1557,6 +1567,7 @@ PRIVATE void tty_init()
 
   	tp->tty_intail = tp->tty_inhead = tp->tty_inbuf;
     tp->tty_inkill = tp->tty_outkill = tp->tty_killbuf;
+    tp->tty_killing = 0;
   	tp->tty_min = 1;
   	tp->tty_termios = termios_defaults;
   	tp->tty_icancel = tp->tty_ocancel = tp->tty_ioctl = tp->tty_close =
